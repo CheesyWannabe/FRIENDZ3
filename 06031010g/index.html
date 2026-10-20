@@ -180,8 +180,11 @@
 
   /* ---------- the song ---------- */
   .song p{font-size:.78rem;color:var(--muted);margin:0 0 1rem}
-  #mount{min-height:152px;background:var(--ink-2);border-radius:12px}
-  #mount iframe{border-radius:12px;display:block;width:100%;border:0}
+  /* the frame holds the size, so it works whether the YouTube API replaces
+     the mount with its own iframe or the fallback nests one inside it */
+  .frame{aspect-ratio:16/9;background:var(--ink-2);border-radius:12px;overflow:hidden}
+  .frame > *{display:block;width:100%;height:100%;border:0}
+  .frame iframe{display:block;width:100%;height:100%;border:0}
 
   footer{margin-top:2.6rem;font-size:.74rem;color:#5E668C}
 
@@ -240,20 +243,22 @@
 
   <section class="song" id="songsec" hidden>
     <p id="songlabel">The song.</p>
-    <div id="mount"></div>
+    <div class="frame"><div id="mount"></div></div>
   </section>
 
   <footer id="foot"></footer>
 
 </main>
 
-<script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+<script src="https://www.youtube.com/iframe_api" async></script>
 <script>
 (function(){
   /* ═══════════════════ EDIT THESE ═══════════════════════════════════════ */
 
-  var SPOTIFY_LINK = "https://open.spotify.com/track/4laW52Dhj4RhmYqdXYiYw9";
-  var SONG_LABEL   = "No Other Heart — Mac DeMarco";
+  // YouTube, so the whole song plays for anyone — Spotify embeds cap at 30s
+  // unless the listener is signed into Premium. It loops until she leaves.
+  var YOUTUBE_ID = "lPeJMoms_Ag";   // Mac DeMarco // No Other Heart (Official Audio)
+  var SONG_LABEL = "No Other Heart — Mac DeMarco";
 
   var TZ         = "Asia/Singapore";              // timezone the page reads in
   var START_ISO  = "2024-03-07T08:00:00+08:00";   // when it started
@@ -501,45 +506,53 @@
   }
 
   // ---- the song --------------------------------------------------------
-  function trackId(s){
-    var m = String(s).match(/track[\/:]([A-Za-z0-9]{22})/);
-    if (m) return m[1];
-    return /^[A-Za-z0-9]{22}$/.test(s) ? s : null;
-  }
+  var player = null, ready = false, wantPlay = false;
 
-  var ID = trackId(SPOTIFY_LINK), controller = null, wantPlay = false;
+  function play(){
+    if (!player || !player.playVideo) return;
+    try{ player.playVideo(); }catch(e){}
+  }
 
   function start(){
-    if (controller){ try{ controller.play(); }catch(e){} }
-    else { wantPlay = true; }   // controller not ready yet — play when it is
+    if (ready) play();
+    else wantPlay = true;      // player not built yet — play the moment it is
   }
 
-  if (ID){
+  if (YOUTUBE_ID){
     document.getElementById("songsec").hidden = false;
     document.getElementById("songlabel").textContent = SONG_LABEL;
     document.getElementById("veilnote").innerHTML =
       "Sound on — I put <b>" + SONG_LABEL.split(" — ")[0] + "</b> on for you.";
 
-    window.onSpotifyIframeApiReady = function(IFrameAPI){
-      IFrameAPI.createController(
-        document.getElementById("mount"),
-        { uri:"spotify:track:"+ID, width:"100%", height:152 },
-        function(ctrl){
-          controller = ctrl;
-          if (wantPlay){ try{ ctrl.play(); }catch(e){} }
+    window.onYouTubeIframeAPIReady = function(){
+      player = new YT.Player("mount", {
+        width:"100%", height:"100%",
+        videoId: YOUTUBE_ID,
+        playerVars:{
+          playsinline:1, rel:0, modestbranding:1,
+          loop:1, playlist:YOUTUBE_ID    // a single video only loops if it lists itself
+        },
+        events:{
+          onReady: function(){
+            ready = true;
+            if (wantPlay) play();
+          },
+          onStateChange: function(ev){   // belt and braces, in case loop drops it
+            if (ev.data === YT.PlayerState.ENDED) play();
+          }
         }
-      );
+      });
     };
 
-    // If Spotify's script is blocked or slow, drop in the plain embed so the
+    // If YouTube's script is blocked or slow, drop in the plain embed so the
     // player is still there to press.
     setTimeout(function(){
-      if (!controller && !document.querySelector("#mount iframe")){
+      if (!player && !document.querySelector("#mount iframe")){
         document.getElementById("mount").innerHTML =
-          '<iframe src="https://open.spotify.com/embed/track/'+ID+'?theme=0" ' +
-          'width="100%" height="152" frameborder="0" loading="lazy" ' +
-          'allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture">' +
-          '</iframe>';
+          '<iframe src="https://www.youtube.com/embed/'+YOUTUBE_ID+
+          '?loop=1&playlist='+YOUTUBE_ID+'&rel=0&playsinline=1" ' +
+          'width="100%" height="100%" frameborder="0" loading="lazy" ' +
+          'allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
       }
     }, 3500);
   } else {
