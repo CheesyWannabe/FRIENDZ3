@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Us</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='9' fill='%23F0A95C'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F1428;
+    --ink-2:#19203C;
+    --ink-3:#242C4E;
+    --ivory:#F0EAE0;
+    --muted:#8992B5;
+    --amber:#F0A95C;
+    --rose:#E08A8A;
+    --serif:"Fraunces",Georgia,serif;
+    --sans:"Space Grotesk",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--ink);
+    background-image:
+      radial-gradient(ellipse 80% 55% at 50% -5%, rgba(240,169,92,.16), transparent 70%),
+      radial-gradient(ellipse 65% 45% at 85% 100%, rgba(224,138,138,.10), transparent 70%);
+    background-repeat:no-repeat;
+    color:var(--ivory);
+    font-family:var(--sans);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:46rem;margin:0 auto;padding:clamp(3rem,9vw,6rem) 1.25rem 4rem}
+
+  /* ---------- the curtain ---------- */
+  .veil{
+    position:fixed;inset:0;z-index:50;
+    background:var(--ink);
+    background-image:radial-gradient(ellipse 70% 50% at 50% 35%, rgba(240,169,92,.17), transparent 70%);
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    gap:1.4rem;padding:2rem 1.5rem;text-align:center;
+    transition:opacity .9s ease, visibility .9s;
+  }
+  .veil h1{
+    font-family:var(--serif);font-weight:500;
+    font-size:clamp(2rem,8vw,3.1rem);
+    line-height:1.15;margin:0;letter-spacing:-.015em;
+  }
+  .veil p{
+    font-family:var(--serif);font-size:1.02rem;line-height:1.6;
+    color:var(--muted);margin:0;max-width:30ch;
+  }
+  .veil p b{color:var(--ivory);font-weight:400;font-style:italic}
+  .begin{
+    margin-top:.6rem;
+    font-family:var(--sans);font-size:.95rem;font-weight:500;
+    color:var(--ink);background:var(--amber);
+    border:none;border-radius:999px;
+    padding:.85rem 2.4rem;cursor:pointer;
+    transition:filter .18s ease, transform .18s ease;
+  }
+  .begin:hover{filter:brightness(1.08);transform:translateY(-2px)}
+  .begin:focus-visible{outline:2px solid var(--ivory);outline-offset:3px}
+  body.open .veil{opacity:0;visibility:hidden}
+  body:not(.open){overflow:hidden}
+
+  /* ---------- the two counters ---------- */
+  .count + .count{
+    margin-top:clamp(3rem,8vw,4.5rem);
+    padding-top:clamp(2.2rem,5vw,2.8rem);
+    border-top:1px solid var(--ink-3);
+  }
+  .count h2{
+    font-family:var(--serif);
+    font-weight:400;
+    font-size:clamp(1.02rem,2.8vw,1.22rem);
+    line-height:1.45;
+    color:var(--muted);
+    margin:0 0 1.1rem;
+    max-width:46ch;
+  }
+
+  /* counter one — written out */
+  .elapsed{
+    font-family:var(--serif);font-weight:500;
+    font-size:clamp(2rem,7.5vw,3.4rem);
+    line-height:1.14;letter-spacing:-.015em;
+    margin:0;max-width:24ch;
+  }
+  .clock{
+    display:block;margin-top:.6rem;
+    font-family:var(--sans);font-weight:400;
+    font-size:clamp(1.1rem,3.6vw,1.5rem);
+    letter-spacing:.04em;color:var(--amber);
+    font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;
+  }
+
+  /* counter two — ticking down */
+  .cd{display:flex;gap:clamp(1.3rem,5vw,2.8rem);flex-wrap:wrap;align-items:baseline}
+  .unit{display:flex;flex-direction:column;gap:.35rem}
+  .unit strong{
+    font-family:var(--sans);font-weight:500;
+    font-size:clamp(1.8rem,6.5vw,2.8rem);line-height:1;letter-spacing:-.01em;
+    font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;
+  }
+  .unit span{font-size:.74rem;color:var(--muted)}
+
+  /* ---------- the song ---------- */
+  .song{
+    margin-top:clamp(3rem,8vw,4.5rem);
+    padding-top:clamp(2.2rem,5vw,2.8rem);
+    border-top:1px solid var(--ink-3);
+  }
+  .song p{font-size:.78rem;color:var(--muted);margin:0 0 1rem}
+  #mount{min-height:152px;background:var(--ink-2);border-radius:12px}
+  #mount iframe{border-radius:12px;display:block;width:100%;border:0}
+
+  footer{margin-top:2.6rem;font-size:.74rem;color:#5E668C}
+
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important;animation:none!important}
+  }
+</style>
+</head>
+<body>
+
+<div class="veil" id="veil">
+  <h1>You found it.</h1>
+  <p id="veilnote">Sound on.</p>
+  <button class="begin" id="begin" type="button">Play</button>
+</div>
+
+<main class="wrap">
+
+  <section class="count">
+    <h2>How long we've been together</h2>
+    <p class="elapsed" id="elapsed">—<span class="clock" id="clock">00:00:00</span></p>
+  </section>
+
+  <section class="count">
+    <h2>Counting down until we get together again</h2>
+    <div class="cd" id="cd"></div>
+  </section>
+
+  <section class="song" id="songsec" hidden>
+    <p id="songlabel">The song.</p>
+    <div id="mount"></div>
+  </section>
+
+  <footer id="foot"></footer>
+
+</main>
+
+<script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+<script>
+(function(){
+  /* ═══════════════════ EDIT THESE ═══════════════════════════════════════ */
+
+  var SPOTIFY_LINK = "https://open.spotify.com/track/4laW52Dhj4RhmYqdXYiYw9";
+  var SONG_LABEL   = "No Other Heart — Mac DeMarco";
+
+  var TZ         = "Asia/Singapore";              // timezone the page reads in
+  var START_ISO  = "2024-03-07T08:00:00+08:00";   // when it started
+  var TARGET_ISO = "2026-12-10T08:00:00+08:00";   // when you're together again
+
+  /* ══════════════════════════════════════════════════════════════════════ */
+
+  var START_MS  = Date.parse(START_ISO),
+      TARGET_MS = Date.parse(TARGET_ISO);
+
+  var elapsedEl = document.getElementById("elapsed"),
+      clockEl   = document.getElementById("clock"),
+      cdEl      = document.getElementById("cd"),
+      footEl    = document.getElementById("foot");
+
+  // ---- wall-clock in TZ, wherever she opens it --------------------------
+  var fmt = null;
+  try{
+    fmt = new Intl.DateTimeFormat("en-GB",{
+      timeZone:TZ, hour12:false,
+      year:"numeric",month:"2-digit",day:"2-digit",
+      hour:"2-digit",minute:"2-digit",second:"2-digit"
+    });
+  }catch(e){}
+
+  function partsOf(date){
+    if (!fmt){
+      return {y:date.getFullYear(),mo:date.getMonth()+1,d:date.getDate(),
+              h:date.getHours(),mi:date.getMinutes(),s:date.getSeconds()};
+    }
+    var o = {};
+    fmt.formatToParts(date).forEach(function(p){
+      if (p.type !== "literal") o[p.type] = p.value;
+    });
+    return {y:+o.year,mo:+o.month,d:+o.day,h:(+o.hour)%24,mi:+o.minute,s:+o.second};
+  }
+
+  var START_PARTS = partsOf(new Date(START_MS));
+
+  function calDiff(a,b){
+    var y=b.y-a.y, mo=b.mo-a.mo, d=b.d-a.d, h=b.h-a.h, mi=b.mi-a.mi, s=b.s-a.s;
+    if (s<0){ s+=60; mi--; }
+    if (mi<0){ mi+=60; h--; }
+    if (h<0){ h+=24; d--; }
+    if (d<0){ d += new Date(Date.UTC(b.y,b.mo-1,0)).getUTCDate(); mo--; }
+    if (mo<0){ mo+=12; y--; }
+    return {y:y,mo:mo,d:d,h:h,mi:mi,s:s};
+  }
+
+  var WORDS = ["zero","one","two","three","four","five","six","seven","eight","nine",
+    "ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen",
+    "eighteen","nineteen","twenty","twenty-one","twenty-two","twenty-three",
+    "twenty-four","twenty-five","twenty-six","twenty-seven","twenty-eight",
+    "twenty-nine","thirty","thirty-one"];
+  function word(n){ return WORDS[n] !== undefined ? WORDS[n] : String(n); }
+  function unit(n,name){ return word(n) + " " + name + (n===1 ? "" : "s"); }
+  function pad(n){ return (n<10?"0":"") + n; }
+
+  function sentence(dd){
+    var bits = [];
+    if (dd.y)  bits.push(unit(dd.y,"year"));
+    if (dd.mo) bits.push(unit(dd.mo,"month"));
+    if (dd.d)  bits.push(unit(dd.d,"day"));
+    if (!bits.length) bits.push("today");
+    return bits.join(", ");
+  }
+  function u(n,label){
+    return '<div class="unit"><strong>'+pad(n)+'</strong><span>'+label+'</span></div>';
+  }
+
+  function tick(){
+    var nowMs = Date.now(), now = partsOf(new Date(nowMs));
+
+    var dd = calDiff(START_PARTS, now);
+    elapsedEl.firstChild.nodeValue = sentence(dd);
+    clockEl.textContent = pad(dd.h)+":"+pad(dd.mi)+":"+pad(dd.s);
+
+    var left = TARGET_MS - nowMs;
+    if (left <= 0){
+      cdEl.innerHTML = '<div class="unit"><strong>00</strong><span>we\'re together</span></div>';
+    } else {
+      var secs = Math.floor(left/1000);
+      cdEl.innerHTML = u(Math.floor(secs/86400),"days")
+                     + u(Math.floor(secs%86400/3600),"hours")
+                     + u(Math.floor(secs%3600/60),"minutes")
+                     + u(secs%60,"seconds");
+    }
+
+    footEl.textContent = "All times " + TZ.split("/").pop().replace(/_/g," ") + ".";
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  // ---- the song --------------------------------------------------------
+  function trackId(s){
+    var m = String(s).match(/track[\/:]([A-Za-z0-9]{22})/);
+    if (m) return m[1];
+    return /^[A-Za-z0-9]{22}$/.test(s) ? s : null;
+  }
+
+  var ID = trackId(SPOTIFY_LINK), controller = null, wantPlay = false;
+
+  function start(){
+    if (controller){ try{ controller.play(); }catch(e){} }
+    else { wantPlay = true; }   // controller not ready yet — play when it is
+  }
+
+  if (ID){
+    document.getElementById("songsec").hidden = false;
+    document.getElementById("songlabel").textContent = SONG_LABEL;
+    document.getElementById("veilnote").innerHTML =
+      "Sound on — I put <b>" + SONG_LABEL.split(" — ")[0] + "</b> on for you.";
+
+    window.onSpotifyIframeApiReady = function(IFrameAPI){
+      IFrameAPI.createController(
+        document.getElementById("mount"),
+        { uri:"spotify:track:"+ID, width:"100%", height:152 },
+        function(ctrl){
+          controller = ctrl;
+          if (wantPlay){ try{ ctrl.play(); }catch(e){} }
+        }
+      );
+    };
+
+    // If Spotify's script is blocked or slow, drop in the plain embed so the
+    // player is still there to press.
+    setTimeout(function(){
+      if (!controller && !document.querySelector("#mount iframe")){
+        document.getElementById("mount").innerHTML =
+          '<iframe src="https://open.spotify.com/embed/track/'+ID+'?theme=0" ' +
+          'width="100%" height="152" frameborder="0" loading="lazy" ' +
+          'allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture">' +
+          '</iframe>';
+      }
+    }, 3500);
+  } else {
+    document.getElementById("veilnote").textContent = "Take a look.";
+    document.getElementById("begin").textContent = "Open";
+  }
+
+  // ---- the curtain -----------------------------------------------------
+  document.getElementById("begin").addEventListener("click", function(){
+    document.body.classList.add("open");
+    start();
+    setTimeout(function(){
+      var v = document.getElementById("veil");
+      if (v && v.parentNode) v.parentNode.removeChild(v);
+    }, 1000);
+  });
+})();
+</script>
+</body>
+</html>

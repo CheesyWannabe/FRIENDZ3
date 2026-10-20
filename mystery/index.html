@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nine Characters</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='9' fill='%23F0A95C'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F1428;
+    --ink-2:#19203C;
+    --ink-3:#242C4E;
+    --ivory:#F0EAE0;
+    --muted:#8992B5;
+    --amber:#F0A95C;
+    --rose:#E08A8A;
+    --teal:#6FC9BC;
+    --serif:"Fraunces",Georgia,serif;
+    --sans:"Space Grotesk",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--ink);
+    background-image:
+      radial-gradient(ellipse 70% 50% at 50% -10%, rgba(240,169,92,.13), transparent 70%),
+      radial-gradient(ellipse 60% 40% at 15% 105%, rgba(224,138,138,.09), transparent 70%);
+    background-repeat:no-repeat;
+    color:var(--ivory);
+    font-family:var(--sans);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:46rem;margin:0 auto;padding:clamp(2.5rem,7vw,5.5rem) 1rem 5rem}
+
+  /* ---------- the lock ---------- */
+  .lock{text-align:center}
+  .addr{
+    font-family:var(--sans);
+    font-size:.8rem;
+    color:var(--muted);
+    letter-spacing:.02em;
+    margin:0 0 1.6rem;
+    word-break:break-all;
+  }
+  .addr b{color:var(--ivory);font-weight:500}
+
+  form{margin:0}
+  .slots{
+    display:flex;
+    gap:.55rem;
+    justify-content:center;
+    align-items:flex-end;
+    flex-wrap:wrap;
+  }
+  .slot{display:flex;flex-direction:column;align-items:center;gap:.5rem}
+  .slot input{
+    font-family:var(--sans);
+    font-weight:500;
+    font-size:clamp(1.35rem,5.5vw,2rem);
+    letter-spacing:.22em;
+    text-indent:.22em;
+    text-align:center;
+    color:var(--ivory);
+    background:var(--ink-2);
+    border:1px solid var(--ink-3);
+    border-radius:.4rem;
+    padding:.75rem .35rem;
+    width:var(--w);
+    transition:border-color .18s ease, background .18s ease;
+  }
+  .slot input::placeholder{color:#4B547A;letter-spacing:.22em}
+  .slot input:focus{
+    outline:none;
+    border-color:var(--amber);
+    background:#1D2545;
+  }
+  .slot input:focus-visible{box-shadow:0 0 0 3px rgba(240,169,92,.25)}
+  .slot[data-full="1"] input{border-color:rgba(111,201,188,.55)}
+  .slot span{
+    font-size:.7rem;
+    color:var(--muted);
+    letter-spacing:.08em;
+  }
+  .s1{--w:9rem}
+  .s2{--w:5.2rem}
+  .s3{--w:7rem}
+
+  .go{
+    margin-top:1.8rem;
+    font-family:var(--sans);
+    font-size:.95rem;
+    font-weight:500;
+    color:var(--ink);
+    background:var(--amber);
+    border:none;
+    border-radius:.4rem;
+    padding:.8rem 2.2rem;
+    cursor:pointer;
+    transition:filter .18s ease;
+  }
+  .go:hover{filter:brightness(1.08)}
+  .go:focus-visible{outline:2px solid var(--ivory);outline-offset:3px}
+
+  .nudge{
+    min-height:1.5rem;
+    margin:1.3rem 0 0;
+    font-family:var(--serif);
+    font-size:1.02rem;
+    line-height:1.5;
+    color:var(--rose);
+  }
+  .nudge:empty{margin-top:0}
+  .nudge.ok{color:var(--teal)}
+
+  /* ---------- riddles ---------- */
+  .riddles{margin:clamp(2.8rem,7vw,4.2rem) 0 0;border-top:1px solid var(--ink-3)}
+  .riddle{
+    padding:1.9rem 0;
+    border-bottom:1px solid var(--ink-3);
+    display:grid;
+    grid-template-columns:5.5rem 1fr;
+    gap:1.4rem;
+  }
+  .riddle dt{
+    font-family:var(--sans);
+    font-size:.78rem;
+    color:var(--amber);
+    line-height:1.6;
+  }
+  .riddle dt small{display:block;color:var(--muted);font-size:.72rem}
+  .riddle dd{
+    margin:0;
+    font-family:var(--serif);
+    font-size:clamp(1.08rem,3vw,1.3rem);
+    font-weight:400;
+    line-height:1.58;
+    max-width:34ch;
+  }
+  .riddle dd em{font-style:italic;color:var(--amber)}
+
+  footer{
+    margin-top:3rem;
+    font-size:.78rem;
+    color:var(--muted);
+    line-height:1.6;
+  }
+
+  @media (max-width:30rem){
+    .riddle{grid-template-columns:1fr;gap:.55rem}
+    .slots{gap:.4rem}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important;animation:none!important}
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <section class="lock">
+    <p class="addr">cheesywannabe.github.io/FRIENDZ3/<b>· · · · · · · · ·</b></p>
+
+    <form id="form" novalidate>
+      <div class="slots">
+        <label class="slot s1">
+          <input id="a" inputmode="numeric" autocomplete="off" maxlength="4"
+                 placeholder="····" aria-label="Answer one, four digits">
+          <span>one</span>
+        </label>
+        <label class="slot s2">
+          <input id="b" inputmode="numeric" autocomplete="off" maxlength="2"
+                 placeholder="··" aria-label="Answer two, two digits">
+          <span>two</span>
+        </label>
+        <label class="slot s3">
+          <input id="c" autocomplete="off" maxlength="3" spellcheck="false"
+                 placeholder="···" aria-label="Answer three, three characters">
+          <span>three</span>
+        </label>
+      </div>
+
+      <button class="go" type="submit">Open it</button>
+      <p class="nudge" id="nudge" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+
+  <dl class="riddles">
+    <div class="riddle">
+      <dt>one<small>four digits</small></dt>
+      <dd>The day before we made it official. Neither of us planned it. Both of us remember. Write the day, then the month.</dd>
+    </div>
+    <div class="riddle">
+      <dt>two<small>two digits</small></dt>
+      <dd>The one you made me rewatch until I knew the lines. How many seasons did it take them to say goodbye?</dd>
+    </div>
+    <div class="riddle">
+      <dt>three<small>three characters</small></dt>
+      <dd>The first song you ever sent me as <em>mine</em>. Go find that link again — the last three characters belong to you.</dd>
+    </div>
+  </dl>
+
+  <footer>Lowercase. No spaces, no slashes.</footer>
+
+</main>
+
+<script>
+(function(){
+  var ANSWER = ["0603","10","10g"];
+  var DEST = "../06031010g/";
+
+  var a = document.getElementById("a"),
+      b = document.getElementById("b"),
+      c = document.getElementById("c"),
+      fields = [a,b,c],
+      lens = [4,2,3],
+      nudge = document.getElementById("nudge");
+
+  function markFull(){
+    fields.forEach(function(f,i){
+      f.parentNode.setAttribute("data-full", f.value.length === lens[i] ? "1" : "0");
+    });
+  }
+
+  // auto-advance when a slot fills up
+  fields.forEach(function(f,i){
+    f.addEventListener("input", function(){
+      markFull();
+      nudge.textContent = "";
+      nudge.className = "nudge";
+      if (f.value.length === lens[i] && i < 2) fields[i+1].focus();
+    });
+  });
+
+  function hintFor(vals){
+    // vals = raw strings, lowercased
+    var wrong = [vals[0] !== ANSWER[0], vals[1] !== ANSWER[1], vals[2] !== ANSWER[2]];
+    if (!vals[0] && !vals[1] && !vals[2]) return "Fill in all three.";
+    if (wrong[0]) return "Check the first four. The day comes before the month.";
+    if (wrong[1]) return "Count the seasons again.";
+    if (wrong[2]) return "Wrong platform! Maybe try a very famous streaming platform?";
+    return null;
+  }
+
+  document.getElementById("form").addEventListener("submit", function(e){
+    e.preventDefault();
+    var vals = fields.map(function(f){ return f.value.trim().toLowerCase(); });
+    var msg = hintFor(vals);
+    if (msg === null){
+      nudge.className = "nudge ok";
+      nudge.textContent = "That's it.";
+      setTimeout(function(){ location.href = DEST; }, 550);
+    } else {
+      nudge.className = "nudge";
+      nudge.textContent = msg;
+    }
+  });
+
+  markFull();
+  a.focus({preventScroll:true});
+})();
+</script>
+</body>
+</html>
