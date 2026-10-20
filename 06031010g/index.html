@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="vi">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Us</title>
+<title>Thư 20/10</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='9' fill='%23F0A95C'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,6 +14,7 @@
     --ink-2:#19203C;
     --ink-3:#242C4E;
     --ivory:#F0EAE0;
+    --paper:#E6DFD4;
     --muted:#8992B5;
     --amber:#F0A95C;
     --rose:#E08A8A;
@@ -68,12 +69,42 @@
   body.open .veil{opacity:0;visibility:hidden}
   body:not(.open){overflow:hidden}
 
-  /* ---------- the two counters ---------- */
-  .count + .count{
+  /* ---------- confetti ---------- */
+  .confetti{position:fixed;inset:0;z-index:60;pointer-events:none}
+
+  /* ---------- dividers between sections ---------- */
+  main section + section{
     margin-top:clamp(3rem,8vw,4.5rem);
     padding-top:clamp(2.2rem,5vw,2.8rem);
     border-top:1px solid var(--ink-3);
   }
+
+  /* ---------- the letter ---------- */
+  .letter .hi{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:clamp(1.7rem,6vw,2.4rem);
+    line-height:1.2;letter-spacing:-.015em;
+    margin:0 0 1.6rem;
+  }
+  .letter p{
+    font-family:var(--serif);
+    font-weight:400;
+    font-size:clamp(1rem,2.6vw,1.1rem);
+    line-height:1.85;
+    color:var(--paper);
+    margin:0 0 1.35rem;
+    max-width:60ch;
+  }
+  .letter .sign{
+    font-family:var(--serif);
+    font-size:clamp(1.15rem,3.4vw,1.4rem);
+    color:var(--ivory);
+    margin:2rem 0 0;
+  }
+  .letter .heart{color:var(--rose)}
+
+  /* ---------- the two counters ---------- */
   .count h2{
     font-family:var(--serif);
     font-weight:400;
@@ -83,8 +114,6 @@
     margin:0 0 1.1rem;
     max-width:46ch;
   }
-
-  /* counter one — written out */
   .elapsed{
     font-family:var(--serif);font-weight:500;
     font-size:clamp(2rem,7.5vw,3.4rem);
@@ -98,8 +127,6 @@
     letter-spacing:.04em;color:var(--amber);
     font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;
   }
-
-  /* counter two — ticking down */
   .cd{display:flex;gap:clamp(1.3rem,5vw,2.8rem);flex-wrap:wrap;align-items:baseline}
   .unit{display:flex;flex-direction:column;gap:.35rem}
   .unit strong{
@@ -110,11 +137,6 @@
   .unit span{font-size:.74rem;color:var(--muted)}
 
   /* ---------- the song ---------- */
-  .song{
-    margin-top:clamp(3rem,8vw,4.5rem);
-    padding-top:clamp(2.2rem,5vw,2.8rem);
-    border-top:1px solid var(--ink-3);
-  }
   .song p{font-size:.78rem;color:var(--muted);margin:0 0 1rem}
   #mount{min-height:152px;background:var(--ink-2);border-radius:12px}
   #mount iframe{border-radius:12px;display:block;width:100%;border:0}
@@ -129,12 +151,26 @@
 <body>
 
 <div class="veil" id="veil">
-  <h1>chíp phá khoá được òiii</h1>
+  <h1>You found it.</h1>
   <p id="veilnote">Sound on.</p>
   <button class="begin" id="begin" type="button">Play</button>
 </div>
 
 <main class="wrap">
+
+  <section class="letter">
+    <p class="hi">hi chíp</p>
+
+    <p>em unlock được lá thư 20/10 của zin ùi, did you have fun? anh rất muốn design một puzzle phù hợp với em, không quá khó về mặt tech, nhưng không quá dễ cho cô người yêu thám tử của anh.</p>
+
+    <p>20/10 của em thế nào? did you have fun? em có được những người xung quanh chiều vì sự đáng yêu và vì đây là ngày của em không? tell me about it, my dm's always open.</p>
+
+    <p>anh xin lỗi típ vì anh đã không save tiền để tặng em gì nhiều hơn là món quà bé nhỏ này, anh đã plan rất kỹ, nhưng anh nhận ra lúc anh ở việt nam anh đã không tiết kiệm lắm... và giờ khi anh đi ví anh còn gần như là nothing in vietnamese currency... và anh lỡ tiêu cho nhg chiếc bánh của típ òi:( i guess i just couldn't stand my girl craving for something that I could easily buy her even from another country, nên anh đã tiu hơi căng cho order ấy:(</p>
+
+    <p>anyways, despite my stupid decisions in spendings, anh mong típ có đã và đang có một ngày 20/10 vui vẻ, đầy hạnh phúc, niềm vui và năng lượng. Quan trọng nhất, anh mong típ sẽ luôn là người phụ nữ của anh.</p>
+
+    <p class="sign">Yêu em <span class="heart">&lt;3</span></p>
+  </section>
 
   <section class="count">
     <h2>How long we've been together</h2>
@@ -255,6 +291,95 @@
   tick();
   setInterval(tick, 1000);
 
+  // ---- confetti --------------------------------------------------------
+  function confetti(){
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    var cv = document.createElement("canvas");
+    cv.className = "confetti";
+    document.body.appendChild(cv);
+
+    var ctx = cv.getContext("2d"),
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    function size(){
+      cv.width  = window.innerWidth  * dpr;
+      cv.height = window.innerHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    size();
+    window.addEventListener("resize", size);
+
+    var COLORS = ["#F0A95C","#E08A8A","#F0EAE0","#FF4D9D","#6FC9BC"],
+        ps = [];
+
+    function piece(x, y, vx, vy){
+      ps.push({
+        x:x, y:y, vx:vx, vy:vy,
+        w:5+Math.random()*5, h:9+Math.random()*6,
+        rot:Math.random()*Math.PI, vr:(Math.random()-0.5)*0.3,
+        flut:Math.random()*Math.PI*2, vflut:0.09+Math.random()*0.11,
+        c:COLORS[(Math.random()*COLORS.length)|0],
+        life:1
+      });
+    }
+
+    function burst(x, y, angle, count, speed){
+      for (var i=0;i<count;i++){
+        var a = angle + (Math.random()-0.5)*0.9,
+            s = speed * (0.55 + Math.random()*0.8);
+        piece(x, y, Math.cos(a)*s, Math.sin(a)*s);
+      }
+    }
+
+    var W = window.innerWidth, H = window.innerHeight;
+
+    // the pop — two cannons from the bottom corners
+    burst(W*0.06, H, -Math.PI/3,   60, 18);
+    burst(W*0.94, H, -Math.PI*2/3, 60, 18);
+
+    // then a shower from above, so it lasts long enough to enjoy
+    var spawning = true;
+    var shower = setInterval(function(){
+      for (var i=0;i<6;i++){
+        piece(Math.random()*window.innerWidth, -20,
+              (Math.random()-0.5)*2, 2+Math.random()*2.5);
+      }
+    }, 85);
+    setTimeout(function(){ clearInterval(shower); spawning = false; }, 2400);
+
+    (function frame(){
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      var alive = 0, floor = window.innerHeight + 80;
+      for (var i=0;i<ps.length;i++){
+        var p = ps[i];
+        if (p.life <= 0 || p.y > floor) continue;
+        p.vy += 0.25;                  // gravity
+        if (p.vy > 5.5) p.vy = 5.5;    // terminal velocity — paper, not bricks
+        p.vx *= 0.992;
+        p.x += p.vx; p.y += p.vy;
+        p.rot  += p.vr;
+        p.flut += p.vflut;
+        if (!spawning) p.life -= 0.006;
+        if (p.life <= 0) continue;
+        alive++;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, Math.min(1, p.life));
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.scale(Math.cos(p.flut), 1);   // flip edge-on as it spins
+        ctx.fillStyle = p.c;
+        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+        ctx.restore();
+      }
+      if (alive > 0 || spawning) requestAnimationFrame(frame);
+      else {
+        window.removeEventListener("resize", size);
+        if (cv.parentNode) cv.parentNode.removeChild(cv);
+      }
+    })();
+  }
+
   // ---- the song --------------------------------------------------------
   function trackId(s){
     var m = String(s).match(/track[\/:]([A-Za-z0-9]{22})/);
@@ -273,7 +398,7 @@
     document.getElementById("songsec").hidden = false;
     document.getElementById("songlabel").textContent = SONG_LABEL;
     document.getElementById("veilnote").innerHTML =
-      "Sound on — I put <b>" + SONG_LABEL.split(" — ")[0] + "</b> on for you <3";
+      "Sound on — I put <b>" + SONG_LABEL.split(" — ")[0] + "</b> on for you.";
 
     window.onSpotifyIframeApiReady = function(IFrameAPI){
       IFrameAPI.createController(
@@ -306,6 +431,7 @@
   document.getElementById("begin").addEventListener("click", function(){
     document.body.classList.add("open");
     start();
+    confetti();
     setTimeout(function(){
       var v = document.getElementById("veil");
       if (v && v.parentNode) v.parentNode.removeChild(v);
