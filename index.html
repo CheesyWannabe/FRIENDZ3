@@ -406,8 +406,8 @@
         /* Toast Notification */
         .toast {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
+            bottom: 76px;
+            right: 18px;
             background: linear-gradient(135deg, var(--primary-orange), var(--primary-purple));
             color: var(--text-primary);
             padding: 15px 25px;
@@ -490,6 +490,54 @@
                 width: 100%;
             }
         }
+
+        /* Mysterious button */
+        .mystery-btn {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            z-index: 2000;
+            display: inline-block;
+            background: #FF4D9D;
+            color: #FFFFFF;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            text-decoration: none;
+            padding: 0.55rem 0.95rem;
+            border-radius: 999px;
+            box-shadow: 0 4px 18px rgba(255, 77, 157, 0.45);
+            animation: mysteryPulse 3.4s ease-in-out infinite;
+        }
+
+        .mystery-btn:hover {
+            background: #FF6FB0;
+            transform: translateY(-2px);
+            animation: none;
+        }
+
+        .mystery-btn:focus-visible {
+            outline: 2px solid #FFFFFF;
+            outline-offset: 3px;
+        }
+
+        @keyframes mysteryPulse {
+            0%, 100% { box-shadow: 0 4px 18px rgba(255, 77, 157, 0.40); }
+            50%      { box-shadow: 0 4px 26px rgba(255, 77, 157, 0.85); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .mystery-btn { animation: none; }
+        }
+
+        @media (max-width: 768px) {
+            .mystery-btn {
+                right: 12px;
+                bottom: 12px;
+                font-size: 0.68rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -565,6 +613,9 @@
 
     <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
+
+    <!-- Mysterious button -->
+    <a class="mystery-btn" href="./mystery/">mysterious button!?</a>
 
     <script>
         // Show data configuration

@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Not Quite</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='9' fill='%23E08A8A'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F1428;
+    --ink-2:#19203C;
+    --ink-3:#242C4E;
+    --ivory:#F0EAE0;
+    --muted:#8992B5;
+    --amber:#F0A95C;
+    --rose:#E08A8A;
+    --teal:#6FC9BC;
+    --serif:"Fraunces",Georgia,serif;
+    --sans:"Space Grotesk",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--ink);
+    background-image:radial-gradient(ellipse 70% 50% at 50% -10%, rgba(224,138,138,.14), transparent 70%);
+    background-repeat:no-repeat;
+    color:var(--ivory);
+    font-family:var(--sans);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:34rem;padding:3rem 1.25rem;text-align:center;width:100%}
+
+  .typed{
+    font-size:.78rem;
+    color:var(--muted);
+    margin:0 0 1.6rem;
+    word-break:break-all;
+  }
+  .typed code{
+    font-family:var(--sans);
+    color:var(--rose);
+    background:var(--ink-2);
+    border-radius:.25rem;
+    padding:.15rem .4rem;
+  }
+
+  /* hero: the three verdict marks */
+  .marks{
+    display:flex;
+    gap:.9rem;
+    justify-content:center;
+    margin:0 0 2rem;
+  }
+  .mark{
+    width:2.9rem;height:2.9rem;
+    border-radius:.4rem;
+    border:1px solid var(--ink-3);
+    background:var(--ink-2);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.1rem;
+    color:var(--muted);
+  }
+  .mark.y{border-color:rgba(111,201,188,.5);color:var(--teal)}
+  .mark.n{border-color:rgba(224,138,138,.5);color:var(--rose)}
+  .markbox{display:flex;flex-direction:column;align-items:center}
+  .markbox span{margin-top:.5rem;font-size:.68rem;color:var(--muted)}
+
+  h1{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:clamp(1.35rem,5vw,1.85rem);
+    line-height:1.4;
+    margin:0 0 .7rem;
+    max-width:26ch;
+    margin-inline:auto;
+  }
+  .sub{
+    font-family:var(--serif);
+    font-size:1rem;
+    line-height:1.6;
+    color:var(--muted);
+    margin:0 0 2.3rem;
+    max-width:32ch;
+    margin-inline:auto;
+  }
+
+  .slots{display:flex;gap:.5rem;justify-content:center;align-items:flex-end;flex-wrap:wrap}
+  .slot{display:flex;flex-direction:column;align-items:center;gap:.5rem}
+  .slot input{
+    font-family:var(--sans);font-weight:500;
+    font-size:clamp(1.2rem,5vw,1.6rem);
+    letter-spacing:.22em;text-indent:.22em;text-align:center;
+    color:var(--ivory);background:var(--ink-2);
+    border:1px solid var(--ink-3);border-radius:.4rem;
+    padding:.65rem .35rem;width:var(--w);
+    transition:border-color .18s ease;
+  }
+  .slot input::placeholder{color:#4B547A;letter-spacing:.22em}
+  .slot input:focus{outline:none;border-color:var(--amber)}
+  .slot input:focus-visible{box-shadow:0 0 0 3px rgba(240,169,92,.25)}
+  .slot em{font-style:normal;font-size:.68rem;color:var(--muted)}
+  .s1{--w:7.6rem}.s2{--w:4.6rem}.s3{--w:6.2rem}
+
+  .go{
+    margin-top:1.5rem;font-family:var(--sans);
+    font-size:.92rem;font-weight:500;
+    color:var(--ink);background:var(--amber);
+    border:none;border-radius:.4rem;padding:.75rem 2rem;cursor:pointer;
+    transition:filter .18s ease;
+  }
+  .go:hover{filter:brightness(1.08)}
+  .go:focus-visible{outline:2px solid var(--ivory);outline-offset:3px}
+
+  .live{
+    min-height:1.4rem;margin:1.2rem 0 0;
+    font-family:var(--serif);font-size:1rem;line-height:1.5;color:var(--rose);
+  }
+  .live.ok{color:var(--teal)}
+
+  .back{
+    display:inline-block;margin-top:2.4rem;
+    font-size:.8rem;color:var(--muted);text-decoration:none;
+    border-bottom:1px solid var(--ink-3);padding-bottom:.15rem;
+  }
+  .back:hover{color:var(--ivory);border-color:var(--amber)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <p class="typed" id="typed"></p>
+
+  <div class="marks" id="marks"></div>
+
+  <h1 id="head">Not quite.</h1>
+  <p class="sub" id="sub"></p>
+
+  <form id="form" novalidate>
+    <div class="slots">
+      <label class="slot s1"><input id="a" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="····" aria-label="Answer one"><em>one</em></label>
+      <label class="slot s2"><input id="b" inputmode="numeric" autocomplete="off" maxlength="2" placeholder="··" aria-label="Answer two"><em>two</em></label>
+      <label class="slot s3"><input id="c" autocomplete="off" maxlength="3" spellcheck="false" placeholder="···" aria-label="Answer three"><em>three</em></label>
+    </div>
+    <button class="go" type="submit">Try again</button>
+    <p class="live" id="live" role="status" aria-live="polite"></p>
+  </form>
+
+  <a class="back" href="/FRIENDZ3/mystery/">Back to the riddles</a>
+
+</main>
+
+<script>
+(function(){
+  /* ---- change these two if you rename the repo ---- */
+  var BASE   = "/FRIENDZ3/";
+  var ANSWER = ["0603","10","10g"];
+  /* ------------------------------------------------- */
+
+  var SLUG = ANSWER.join("");
+  var DEST = BASE + SLUG + "/";
+
+  // --- what did she actually type? ---------------------------------
+  var raw = "";
+  try { raw = decodeURIComponent(location.pathname); } catch(e){ raw = location.pathname; }
+  var low = raw.toLowerCase(), key = BASE.toLowerCase(), attempt;
+  var at = low.lastIndexOf(key);
+  attempt = (at >= 0) ? raw.slice(at + key.length) : raw.replace(/^\/+/, "");
+  attempt = attempt.replace(/\.html?$/i, "").replace(/\//g, "").trim();
+
+  // typed it right but landed here anyway (trailing slash, index quirk)
+  if (attempt.toLowerCase() === SLUG && attempt === SLUG){
+    location.replace(DEST);
+    return;
+  }
+
+  // --- split the attempt into the three slots ----------------------
+  function split(s){
+    return [s.slice(0,4), s.slice(4,6), s.slice(6,9)];
+  }
+
+  var head = document.getElementById("head"),
+      sub  = document.getElementById("sub"),
+      typed= document.getElementById("typed"),
+      marks= document.getElementById("marks"),
+      live = document.getElementById("live"),
+      a=document.getElementById("a"), b=document.getElementById("b"), c=document.getElementById("c"),
+      fields=[a,b,c], lens=[4,2,3];
+
+  var names = ["one","two","three"];
+  var markEls = [];
+  for (var i=0;i<3;i++){
+    var box = document.createElement("div");
+    box.className = "markbox";
+    var m = document.createElement("div");
+    m.className = "mark";
+    m.textContent = "·";
+    var lbl = document.createElement("span");
+    lbl.textContent = names[i];
+    box.appendChild(m); box.appendChild(lbl);
+    marks.appendChild(box);
+    markEls.push(m);
+  }
+
+  function verdict(vals, showMarks){
+    var wrong = [vals[0]!==ANSWER[0], vals[1]!==ANSWER[1], vals[2]!==ANSWER[2]];
+    if (showMarks){
+      for (var i=0;i<3;i++){
+        markEls[i].className = "mark " + (wrong[i] ? "n" : "y");
+        markEls[i].textContent = wrong[i] ? "✕" : "✓";
+      }
+    }
+    if (!wrong[0] && !wrong[1] && !wrong[2]) return null;
+    if (wrong[0]) return "Check the first four. The day comes before the month.";
+    if (wrong[1]) return "Count the seasons again.";
+    return "Wrong platform! Maybe try a very famous streaming platform?";
+  }
+
+  // --- first paint: judge the URL she came in with ------------------
+  if (!attempt){
+    head.textContent = "Nothing here yet.";
+    sub.textContent  = "Nine characters go on the end of the address — four, then two, then three.";
+    typed.innerHTML  = "";
+  } else if (attempt.toLowerCase() === SLUG){
+    // only the capitalisation is off
+    head.textContent = "All of it's right.";
+    sub.textContent  = "Try it in lowercase.";
+    typed.innerHTML  = "you typed <code>" + escape_(attempt) + "</code>";
+    for (var k=0;k<3;k++){ markEls[k].className="mark y"; markEls[k].textContent="✓"; }
+  } else if (attempt.length !== 9){
+    head.textContent = "That's not nine characters.";
+    sub.textContent  = "Four, then two, then three — all run together.";
+    typed.innerHTML  = "you typed <code>" + escape_(attempt) + "</code> — " + attempt.length + " characters";
+  } else {
+    var v = split(attempt.toLowerCase());
+    var msg = verdict(v, true);
+    head.textContent = "Close.";
+    sub.textContent  = msg || "";
+    typed.innerHTML  = "you typed <code>" + escape_(attempt) + "</code>";
+    // pre-fill the boxes so she only fixes what's wrong
+    for (var n=0;n<3;n++) fields[n].value = v[n];
+  }
+
+  function escape_(s){
+    return String(s).replace(/[&<>"']/g, function(ch){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch];
+    });
+  }
+
+  // --- retry inline, no URL bar needed -----------------------------
+  fields.forEach(function(f,i){
+    f.addEventListener("input", function(){
+      live.textContent = ""; live.className = "live";
+      if (f.value.length === lens[i] && i < 2) fields[i+1].focus();
+    });
+  });
+
+  document.getElementById("form").addEventListener("submit", function(e){
+    e.preventDefault();
+    var vals = fields.map(function(f){ return f.value.trim().toLowerCase(); });
+    if (!vals[0] && !vals[1] && !vals[2]){
+      live.className = "live";
+      live.textContent = "Fill in all three.";
+      return;
+    }
+    var msg = verdict(vals, true);
+    if (msg === null){
+      live.className = "live ok";
+      live.textContent = "That's it.";
+      setTimeout(function(){ location.href = DEST; }, 550);
+    } else {
+      live.className = "live";
+      live.textContent = msg;
+    }
+  });
+})();
+</script>
+</body>
+</html>
