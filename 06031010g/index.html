@@ -104,6 +104,48 @@
   }
   .letter .heart{color:var(--rose)}
 
+  /* ---------- the flipbook ---------- */
+  .stage{perspective:1600px;max-width:25rem;margin:0 auto}
+  .card{
+    position:relative;
+    aspect-ratio:3/4;
+    transform-style:preserve-3d;
+    transition:transform .62s cubic-bezier(.3,.72,.28,1);
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .card.next{transform:rotateY(-180deg)}
+  .card.prev{transform:rotateY(180deg)}
+  .face{
+    position:absolute;inset:0;
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
+    background:var(--ink-2);
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 14px 40px rgba(0,0,0,.45);
+  }
+  .face.back{transform:rotateY(180deg)}
+  .face img{
+    width:100%;height:100%;
+    object-fit:contain;
+    display:block;
+    border-radius:12px;
+  }
+  .nav{display:flex;align-items:center;justify-content:center;gap:1.5rem;margin:1.4rem 0 0}
+  .nav button{
+    width:2.6rem;height:2.6rem;border-radius:50%;
+    border:1px solid var(--ink-3);background:var(--ink-2);
+    color:var(--ivory);font-family:var(--sans);font-size:1.1rem;line-height:1;
+    cursor:pointer;transition:border-color .18s ease,color .18s ease;
+  }
+  .nav button:hover{border-color:var(--amber);color:var(--amber)}
+  .nav button:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+  .nav .of{
+    font-size:.78rem;color:var(--muted);
+    font-variant-numeric:tabular-nums;min-width:4.5rem;text-align:center;
+  }
+
   /* ---------- the two counters ---------- */
   .count h2{
     font-family:var(--serif);
@@ -170,6 +212,20 @@
     <p>anyways, despite my stupid decisions in spendings, anh mong típ có đã và đang có một ngày 20/10 vui vẻ, đầy hạnh phúc, niềm vui và năng lượng. Quan trọng nhất, anh mong típ sẽ luôn là người phụ nữ của anh.</p>
 
     <p class="sign">Yêu em <span class="heart">&lt;3</span></p>
+  </section>
+
+  <section class="flip">
+    <div class="stage">
+      <div class="card" id="card">
+        <div class="face front"><img id="pf" alt="" decoding="async"></div>
+        <div class="face back"><img id="pb" alt="" decoding="async"></div>
+      </div>
+    </div>
+    <div class="nav">
+      <button id="pprev" type="button" aria-label="Previous photo">&#8249;</button>
+      <span class="of" id="pcount" role="status" aria-live="polite"></span>
+      <button id="pnext" type="button" aria-label="Next photo">&#8250;</button>
+    </div>
   </section>
 
   <section class="count">
@@ -290,6 +346,70 @@
   }
   tick();
   setInterval(tick, 1000);
+
+  // ---- flipbook --------------------------------------------------------
+  var PHOTOS = [];
+  for (var pn=1; pn<=20; pn++) PHOTOS.push("photos/" + (pn<10?"0":"") + pn + ".jpg");
+
+  var REDUCED = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches),
+      card   = document.getElementById("card"),
+      pf     = document.getElementById("pf"),
+      pb     = document.getElementById("pb"),
+      pcount = document.getElementById("pcount"),
+      pi = 0, busy = false;
+
+  function plabel(n){ return (n+1<10?"0":"") + (n+1) + " / " + PHOTOS.length; }
+  function palt(n){ return "Photo " + (n+1) + " of " + PHOTOS.length; }
+  function preload(n){
+    var im = new Image();
+    im.src = PHOTOS[(n + PHOTOS.length) % PHOTOS.length];
+  }
+
+  pf.src = PHOTOS[0];
+  pf.alt = palt(0);
+  pcount.textContent = plabel(0);
+  preload(1); preload(PHOTOS.length - 1);
+
+  function turn(dir){
+    if (busy) return;
+    busy = true;
+    var n = (pi + dir + PHOTOS.length) % PHOTOS.length;
+    pb.src = PHOTOS[n];
+    pb.alt = palt(n);
+    pcount.textContent = plabel(n);
+    card.classList.add(dir > 0 ? "next" : "prev");
+    setTimeout(function(){
+      pi = n;
+      pf.src = PHOTOS[pi];
+      pf.alt = palt(pi);
+      card.style.transition = "none";
+      card.classList.remove("next","prev");
+      void card.offsetWidth;          // flush the reset before re-enabling
+      card.style.transition = "";
+      busy = false;
+      preload(pi + 1); preload(pi - 1);
+    }, REDUCED ? 0 : 640);
+  }
+
+  document.getElementById("pnext").addEventListener("click", function(){ turn(1); });
+  document.getElementById("pprev").addEventListener("click", function(){ turn(-1); });
+  card.addEventListener("click", function(){ turn(1); });
+
+  var tsx = 0, tsy = 0;
+  card.addEventListener("touchstart", function(e){
+    tsx = e.changedTouches[0].clientX; tsy = e.changedTouches[0].clientY;
+  }, {passive:true});
+  card.addEventListener("touchend", function(e){
+    var dx = e.changedTouches[0].clientX - tsx,
+        dy = e.changedTouches[0].clientY - tsy;
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) turn(dx < 0 ? 1 : -1);
+  }, {passive:true});
+
+  document.addEventListener("keydown", function(e){
+    if (!document.body.classList.contains("open")) return;
+    if (e.key === "ArrowRight"){ e.preventDefault(); turn(1); }
+    else if (e.key === "ArrowLeft"){ e.preventDefault(); turn(-1); }
+  });
 
   // ---- confetti --------------------------------------------------------
   function confetti(){

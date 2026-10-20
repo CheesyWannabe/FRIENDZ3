@@ -183,7 +183,7 @@
         </label>
       </div>
 
-      <button class="go" type="submit">PHÁ KHOÁ</button>
+      <button class="go" type="submit">Open it</button>
       <p class="nudge" id="nudge" role="status" aria-live="polite"></p>
     </form>
   </section>
@@ -195,15 +195,15 @@
     </div>
     <div class="riddle">
       <dt>two<small>two digits</small></dt>
-      <dd>The sole reason why this website exist. You remember all the lines. How many seasons did it take them to say goodbye?</dd>
+      <dd>The one you made me rewatch until I knew the lines. How many seasons did it take them to say goodbye?</dd>
     </div>
     <div class="riddle">
       <dt>three<small>three characters</small></dt>
-      <dd>The first song you ever sent me as a <em>gift</em>. Go find that link — the last three characters belong to you.</dd>
+      <dd>The first song you ever sent me as <em>mine</em>. Go find that link again — the last three characters belong to you.</dd>
     </div>
   </dl>
 
-  <footer>không dấu, không viết hoa, không gạch chéo hay chì hếc</footer>
+  <footer>Lowercase. No spaces, no slashes.</footer>
 
 </main>
 
@@ -239,9 +239,9 @@
     // vals = raw strings, lowercased
     var wrong = [vals[0] !== ANSWER[0], vals[1] !== ANSWER[1], vals[2] !== ANSWER[2]];
     if (!vals[0] && !vals[1] && !vals[2]) return "Fill in all three.";
-    if (wrong[0]) return "ui sao em nại quên ngài nài:( hôm ấy là một chiều định mệnh ở toà K...";
-    if (wrong[1]) return "sai ròi hớ hớ chíp không phải sitcom nerd như tui tửn!!";
-    if (wrong[2]) return "hăm phại link em đang dùng âu, link này trên một web siu nổi tín";
+    if (wrong[0]) return "Check the first four. The day comes before the month.";
+    if (wrong[1]) return "Count the seasons again.";
+    if (wrong[2]) return "Wrong platform! Maybe try a very famous streaming platform?";
     return null;
   }
 
@@ -251,7 +251,7 @@
     var msg = hintFor(vals);
     if (msg === null){
       nudge.className = "nudge ok";
-      nudge.textContent = "PHÁ KHOÁ THÀNH CÔNG!";
+      nudge.textContent = "That's it.";
       setTimeout(function(){ location.href = DEST; }, 550);
     } else {
       nudge.className = "nudge";
