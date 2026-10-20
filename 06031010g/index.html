@@ -55,7 +55,6 @@
     font-family:var(--serif);font-size:1.02rem;line-height:1.6;
     color:var(--muted);margin:0;max-width:30ch;
   }
-  .veil p b{color:var(--ivory);font-weight:400;font-style:italic}
   .begin{
     margin-top:.6rem;
     font-family:var(--sans);font-size:.95rem;font-weight:500;
@@ -178,13 +177,33 @@
   }
   .unit span{font-size:.74rem;color:var(--muted)}
 
-  /* ---------- the song ---------- */
-  .song p{font-size:.78rem;color:var(--muted);margin:0 0 1rem}
-  /* the frame holds the size, so it works whether the YouTube API replaces
-     the mount with its own iframe or the fallback nests one inside it */
-  .frame{aspect-ratio:16/9;background:var(--ink-2);border-radius:12px;overflow:hidden}
-  .frame > *{display:block;width:100%;height:100%;border:0}
-  .frame iframe{display:block;width:100%;height:100%;border:0}
+  /* ---------- her voice ---------- */
+  .song p{font-size:.78rem;color:var(--muted);margin:0 0 1.1rem}
+  .player{display:flex;align-items:center;gap:1.1rem}
+  .pp{
+    flex:none;width:3rem;height:3rem;border-radius:50%;
+    border:1px solid var(--ink-3);background:var(--ink-2);
+    color:var(--amber);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:border-color .18s ease,background .18s ease;
+  }
+  .pp:hover{border-color:var(--amber);background:#1D2545}
+  .pp:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+  .pp svg{width:1.15rem;height:1.15rem;fill:currentColor;display:block}
+  .bar{
+    flex:1;height:3px;border-radius:2px;
+    background:var(--ink-3);position:relative;cursor:pointer;
+  }
+  .bar::before{content:"";position:absolute;inset:-12px 0}  /* easier to grab */
+  .barfill{
+    position:absolute;left:0;top:0;height:100%;width:0;
+    border-radius:2px;
+    background:linear-gradient(90deg,var(--rose),var(--amber));
+  }
+  .time{
+    flex:none;font-size:.74rem;color:var(--muted);
+    font-variant-numeric:tabular-nums;min-width:5.4rem;text-align:right;
+  }
 
   footer{margin-top:2.6rem;font-size:.74rem;color:#5E668C}
 
@@ -242,23 +261,28 @@
   </section>
 
   <section class="song" id="songsec" hidden>
-    <p id="songlabel">The song.</p>
-    <div class="frame"><div id="mount"></div></div>
+    <p id="songlabel"></p>
+    <div class="player">
+      <button class="pp" id="pp" type="button" aria-label="Play">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path id="ppicon" d="M8 5v14l11-7z"></path></svg>
+      </button>
+      <div class="bar" id="bar"><div class="barfill" id="barfill"></div></div>
+      <span class="time" id="time">0:00 / 0:00</span>
+    </div>
+    <audio id="au" preload="auto"></audio>
   </section>
 
   <footer id="foot"></footer>
 
 </main>
 
-<script src="https://www.youtube.com/iframe_api" async></script>
 <script>
 (function(){
   /* ═══════════════════ EDIT THESE ═══════════════════════════════════════ */
 
-  // YouTube, so the whole song plays for anyone — Spotify embeds cap at 30s
-  // unless the listener is signed into Premium. It loops until she leaves.
-  var YOUTUBE_ID = "lPeJMoms_Ag";   // Mac DeMarco // No Other Heart (Official Audio)
-  var SONG_LABEL = "No Other Heart — Mac DeMarco";
+  var AUDIO_SRC   = "audio/tip.mp3";   // her voice, served from this folder
+  var AUDIO_LABEL = "Giọng típ";       // the little caption above the player
+  var AUDIO_LOOP  = true;              // false = play once and stop
 
   var TZ         = "Asia/Singapore";              // timezone the page reads in
   var START_ISO  = "2024-03-07T08:00:00+08:00";   // when it started
@@ -275,9 +299,9 @@
       footEl    = document.getElementById("foot");
 
   // ---- wall-clock in TZ, wherever she opens it --------------------------
-  var fmt = null;
+  var fmtTZ = null;
   try{
-    fmt = new Intl.DateTimeFormat("en-GB",{
+    fmtTZ = new Intl.DateTimeFormat("en-GB",{
       timeZone:TZ, hour12:false,
       year:"numeric",month:"2-digit",day:"2-digit",
       hour:"2-digit",minute:"2-digit",second:"2-digit"
@@ -285,12 +309,12 @@
   }catch(e){}
 
   function partsOf(date){
-    if (!fmt){
+    if (!fmtTZ){
       return {y:date.getFullYear(),mo:date.getMonth()+1,d:date.getDate(),
               h:date.getHours(),mi:date.getMinutes(),s:date.getSeconds()};
     }
     var o = {};
-    fmt.formatToParts(date).forEach(function(p){
+    fmtTZ.formatToParts(date).forEach(function(p){
       if (p.type !== "literal") o[p.type] = p.value;
     });
     return {y:+o.year,mo:+o.month,d:+o.day,h:(+o.hour)%24,mi:+o.minute,s:+o.second};
@@ -418,7 +442,7 @@
 
   // ---- confetti --------------------------------------------------------
   function confetti(){
-    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (REDUCED) return;
 
     var cv = document.createElement("canvas");
     cv.className = "confetti";
@@ -505,59 +529,63 @@
     })();
   }
 
-  // ---- the song --------------------------------------------------------
-  var player = null, ready = false, wantPlay = false;
+  // ---- her voice -------------------------------------------------------
+  var au      = document.getElementById("au"),
+      pp      = document.getElementById("pp"),
+      ppicon  = document.getElementById("ppicon"),
+      bar     = document.getElementById("bar"),
+      barfill = document.getElementById("barfill"),
+      timeEl  = document.getElementById("time");
 
-  function play(){
-    if (!player || !player.playVideo) return;
-    try{ player.playVideo(); }catch(e){}
+  var PLAY_D  = "M8 5v14l11-7z",
+      PAUSE_D = "M7 5h3.2v14H7zM13.8 5H17v14h-3.2z";
+
+  function clock(s){
+    if (!isFinite(s) || s < 0) s = 0;
+    var m = Math.floor(s/60), ss = Math.floor(s%60);
+    return m + ":" + (ss<10?"0":"") + ss;
+  }
+  function paint(){
+    var d = au.duration || 0;
+    barfill.style.width = d ? ((au.currentTime/d)*100).toFixed(2) + "%" : "0%";
+    timeEl.textContent = clock(au.currentTime) + " / " + clock(d);
   }
 
-  function start(){
-    if (ready) play();
-    else wantPlay = true;      // player not built yet — play the moment it is
-  }
-
-  if (YOUTUBE_ID){
+  if (AUDIO_SRC){
     document.getElementById("songsec").hidden = false;
-    document.getElementById("songlabel").textContent = SONG_LABEL;
-    document.getElementById("veilnote").innerHTML =
-      "Sound on — I put <b>" + SONG_LABEL.split(" — ")[0] + "</b> on for you.";
+    document.getElementById("songlabel").textContent = AUDIO_LABEL;
+    au.loop = AUDIO_LOOP;
+    au.src  = AUDIO_SRC;
 
-    window.onYouTubeIframeAPIReady = function(){
-      player = new YT.Player("mount", {
-        width:"100%", height:"100%",
-        videoId: YOUTUBE_ID,
-        playerVars:{
-          playsinline:1, rel:0, modestbranding:1,
-          loop:1, playlist:YOUTUBE_ID    // a single video only loops if it lists itself
-        },
-        events:{
-          onReady: function(){
-            ready = true;
-            if (wantPlay) play();
-          },
-          onStateChange: function(ev){   // belt and braces, in case loop drops it
-            if (ev.data === YT.PlayerState.ENDED) play();
-          }
-        }
-      });
-    };
+    au.addEventListener("loadedmetadata", paint);
+    au.addEventListener("timeupdate", paint);
+    au.addEventListener("ended", paint);
+    au.addEventListener("play",  function(){
+      ppicon.setAttribute("d", PAUSE_D); pp.setAttribute("aria-label","Pause");
+    });
+    au.addEventListener("pause", function(){
+      ppicon.setAttribute("d", PLAY_D);  pp.setAttribute("aria-label","Play");
+    });
 
-    // If YouTube's script is blocked or slow, drop in the plain embed so the
-    // player is still there to press.
-    setTimeout(function(){
-      if (!player && !document.querySelector("#mount iframe")){
-        document.getElementById("mount").innerHTML =
-          '<iframe src="https://www.youtube.com/embed/'+YOUTUBE_ID+
-          '?loop=1&playlist='+YOUTUBE_ID+'&rel=0&playsinline=1" ' +
-          'width="100%" height="100%" frameborder="0" loading="lazy" ' +
-          'allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
-      }
-    }, 3500);
-  } else {
-    document.getElementById("veilnote").textContent = "Take a look.";
-    document.getElementById("begin").textContent = "Open";
+    pp.addEventListener("click", function(){
+      if (au.paused) start(); else au.pause();
+    });
+
+    bar.addEventListener("click", function(e){
+      var r = bar.getBoundingClientRect(), d = au.duration;
+      if (!d) return;
+      au.currentTime = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * d;
+      paint();
+    });
+
+    paint();
+  }
+
+  // Her tap on Play is the gesture browsers require before audio may start.
+  function start(){
+    if (!AUDIO_SRC) return;
+    var p = au.play();
+    if (p && p.catch) p.catch(function(){});   // blocked — the button still works
   }
 
   // ---- the curtain -----------------------------------------------------
